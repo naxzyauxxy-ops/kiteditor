@@ -1,4 +1,4 @@
-// Modified by Claude - Added Bedrock shift-click hint in lore
+// Modified by Claude - Separate load/edit rows, no ender chest
 package blokplugins.kitroom.inventories;
 
 import blokplugins.kitroom.holders.KitMenuHolder;
@@ -20,8 +20,14 @@ public class KitMenu {
     private static CreateItem createItem;
     public Inventory inv;
 
+    // Layout (36 slots, 4 rows):
+    // Row 0 (0-8):   filler
+    // Row 1 (9-17):  KIT 1-9 load buttons (CHEST)
+    // Row 2 (18-26): KIT 1-9 edit buttons (ANVIL)
+    // Row 3 (27-35): filler + kit room (30) + info (31) + clear (32) + admin (35)
+
     public KitMenu(final Player p) {
-        this.inv = Bukkit.createInventory((InventoryHolder) new KitMenuHolder(), 45,
+        this.inv = Bukkit.createInventory((InventoryHolder) new KitMenuHolder(), 36,
                 ChatColor.LIGHT_PURPLE + p.getDisplayName() + "'s kits");
         this.InitializeItems(p.hasPermission("kitroom.admin"));
         p.openInventory(this.inv);
@@ -29,51 +35,50 @@ public class KitMenu {
 
     public void InitializeItems(final Boolean isAdmin) {
         final ItemStack filler = KitMenu.createItem.CreateItem(Material.PURPLE_STAINED_GLASS_PANE, " ");
-        for (int i = 0; i < 45; ++i) {
+        for (int i = 0; i < 36; ++i) {
             this.inv.setItem(i, filler);
         }
 
-        // Kit slots
-        final ItemStack chest = new ItemStack(Material.CHEST);
-        final ItemMeta metachest = chest.getItemMeta();
+        // Kit LOAD buttons — row 1 (slots 9-17)
         for (int j = 9; j < 18; ++j) {
-            metachest.setDisplayName("" + ChatColor.LIGHT_PURPLE + ChatColor.BOLD + "KIT " + (j - 8));
-            final List<String> chestlore = new ArrayList<>();
-            chestlore.add(ChatColor.GRAY + "- Left click to load kit");
-            chestlore.add(ChatColor.GRAY + "- Right click to edit kit");
-            chestlore.add(ChatColor.GRAY + "- Shift click to edit kit (Bedrock/Mobile)");
-            metachest.setLore(chestlore);
-            chest.setItemMeta(metachest);
-            this.inv.setItem(j, new ItemStack(chest));
+            int kitNum = j - 8;
+            ItemStack chest = new ItemStack(Material.CHEST);
+            ItemMeta meta = chest.getItemMeta();
+            meta.setDisplayName("" + ChatColor.LIGHT_PURPLE + ChatColor.BOLD + "KIT " + kitNum);
+            List<String> lore = new ArrayList<>();
+            lore.add(ChatColor.GREEN + "▶ Click to LOAD kit");
+            meta.setLore(lore);
+            chest.setItemMeta(meta);
+            this.inv.setItem(j, chest);
         }
 
-        // Ender chest slots
-        final ItemStack echest = new ItemStack(Material.ENDER_CHEST);
-        final ItemMeta metaechest = echest.getItemMeta();
-        for (int k = 18; k < 27; ++k) {
-            metaechest.setDisplayName("" + ChatColor.DARK_GRAY + ChatColor.BOLD + "ENDERCHEST " + (k - 17));
-            final List<String> echestlore = new ArrayList<>();
-            echestlore.add(ChatColor.GRAY + "- Left click to load ender chest");
-            echestlore.add(ChatColor.GRAY + "- Right click to edit ender chest");
-            echestlore.add(ChatColor.GRAY + "- Shift click to edit ender chest (Bedrock/Mobile)");
-            metaechest.setLore(echestlore);
-            echest.setItemMeta(metaechest);
-            this.inv.setItem(k, new ItemStack(echest));
+        // Kit EDIT buttons — row 2 (slots 18-26)
+        for (int j = 18; j < 27; ++j) {
+            int kitNum = j - 17;
+            ItemStack anvil = new ItemStack(Material.ANVIL);
+            ItemMeta meta = anvil.getItemMeta();
+            meta.setDisplayName("" + ChatColor.YELLOW + ChatColor.BOLD + "EDIT KIT " + kitNum);
+            List<String> lore = new ArrayList<>();
+            lore.add(ChatColor.YELLOW + "✎ Click to EDIT kit");
+            meta.setLore(lore);
+            anvil.setItemMeta(meta);
+            this.inv.setItem(j, anvil);
         }
 
+        // Bottom row
         final ItemStack kitroom = KitMenu.createItem.CreateItem(Material.NETHER_STAR,
                 "" + ChatColor.GREEN + ChatColor.BOLD + "KIT ROOM");
         this.inv.setItem(30, kitroom);
 
         final List<String> infolore = new ArrayList<>();
-        infolore.add(ChatColor.GRAY + "- Click a kit slot to load your kit");
-        infolore.add(ChatColor.GRAY + "- Right click / Shift click (Bedrock) to edit");
+        infolore.add(ChatColor.GRAY + "- Top row: click to load kit");
+        infolore.add(ChatColor.GRAY + "- Bottom row: click to edit kit");
         final ItemStack info = KitMenu.createItem.CreateItem(Material.OAK_SIGN,
                 "" + ChatColor.GREEN + ChatColor.BOLD + "INFO", infolore);
         this.inv.setItem(31, info);
 
         final List<String> clearlore = new ArrayList<>();
-        clearlore.add(ChatColor.GRAY + "- Shift Click");
+        clearlore.add(ChatColor.GRAY + "- Click to clear inventory");
         final ItemStack clear = KitMenu.createItem.CreateItem(Material.REDSTONE_BLOCK,
                 "" + ChatColor.RED + ChatColor.BOLD + "CLEAR INVENTORY", clearlore);
         this.inv.setItem(32, clear);
@@ -81,7 +86,7 @@ public class KitMenu {
         if (isAdmin) {
             final ItemStack admin = KitMenu.createItem.CreateItem(Material.ENCHANTED_GOLDEN_APPLE,
                     "" + ChatColor.RED + ChatColor.BOLD + "Admin Tools");
-            this.inv.setItem(40, admin);
+            this.inv.setItem(35, admin);
         }
     }
 
