@@ -6,7 +6,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.sql.*;
 
-public class SQLite extends DatabaseManager {
+public class SQLite implements DatabaseManager {
 
     private Connection connection;
     private final JavaPlugin plugin;
