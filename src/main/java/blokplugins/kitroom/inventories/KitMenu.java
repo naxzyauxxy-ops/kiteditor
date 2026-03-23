@@ -41,7 +41,7 @@ public class KitMenu {
             final List<String> chestlore = new ArrayList<>();
             chestlore.add(ChatColor.GRAY + "- Left click to load kit");
             chestlore.add(ChatColor.GRAY + "- Right click to edit kit");
-            chestlore.add(ChatColor.GRAY + "- Shift click to edit kit (Bedrock)");
+            chestlore.add(ChatColor.GRAY + "- Shift click to edit kit (Bedrock/Mobile)");
             metachest.setLore(chestlore);
             chest.setItemMeta(metachest);
             this.inv.setItem(j, new ItemStack(chest));
@@ -55,7 +55,7 @@ public class KitMenu {
             final List<String> echestlore = new ArrayList<>();
             echestlore.add(ChatColor.GRAY + "- Left click to load ender chest");
             echestlore.add(ChatColor.GRAY + "- Right click to edit ender chest");
-            echestlore.add(ChatColor.GRAY + "- Shift click to edit ender chest (Bedrock)");
+            echestlore.add(ChatColor.GRAY + "- Shift click to edit ender chest (Bedrock/Mobile)");
             metaechest.setLore(echestlore);
             echest.setItemMeta(metaechest);
             this.inv.setItem(k, new ItemStack(echest));

@@ -1,4 +1,4 @@
-// Modified by Claude - Added Bedrock (Floodgate) support
+// Modified by Claude - Shift+Left-Click to edit (works for Java, Bedrock, and mobile)
 package blokplugins.kitroom.listeners.inventories;
 
 import blokplugins.kitroom.inventories.EChestEditor;
@@ -9,37 +9,18 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 public class KitMenuListener {
 
-    /**
-     * Returns true if this player is a Bedrock player connected via Geyser/Floodgate.
-     * Floodgate prefixes Bedrock UUIDs with zeros in the most significant bits.
-     * We also check via the Floodgate API if it's available.
-     */
-    private static boolean isBedrockPlayer(Player p) {
-        // Check Floodgate API if present
-        try {
-            Class<?> floodgateApi = Class.forName("org.geysermc.floodgate.api.FloodgateApi");
-            Object api = floodgateApi.getMethod("getInstance").invoke(null);
-            return (boolean) floodgateApi.getMethod("isFloodgatePlayer", java.util.UUID.class)
-                    .invoke(api, p.getUniqueId());
-        } catch (Exception ignored) {
-            // Floodgate not installed or error - fall back to UUID check
-            // Floodgate Bedrock players have UUIDs starting with 00000000-0000-0000-
-            return p.getUniqueId().toString().startsWith("00000000-0000-0000-");
-        }
-    }
-
     public static void handleInventoryClick(final InventoryClickEvent e) {
         final int slot = e.getRawSlot();
         final Player p = (Player) e.getWhoClicked();
-        final boolean bedrock = isBedrockPlayer(p);
 
         switch (slot) {
             // Kit slots 1-9 are at raw slots 9-17
             case 9: case 10: case 11: case 12: case 13:
             case 14: case 15: case 16: case 17: {
-                // Bedrock players can only left-click, so we need a way to distinguish
-                // load vs edit. We use shift+click = edit, normal click = load.
-                if (e.isRightClick() || (bedrock && e.isShiftClick())) {
+                // Shift+click (any button) = edit — works for Java, Bedrock, and mobile
+                // Plain left-click = load
+                // Right-click = edit (Java only)
+                if (e.isRightClick() || e.isShiftClick()) {
                     new KitEditor(p, e.getRawSlot() - 8, null);
                     e.setCancelled(true);
                     break;
@@ -55,7 +36,7 @@ public class KitMenuListener {
             // Ender chest slots 1-9 are at raw slots 18-26
             case 18: case 19: case 20: case 21: case 22:
             case 23: case 24: case 25: case 26: {
-                if (e.isRightClick() || (bedrock && e.isShiftClick())) {
+                if (e.isRightClick() || e.isShiftClick()) {
                     new EChestEditor(p, e.getRawSlot() - 17, null);
                     e.setCancelled(true);
                     break;
@@ -74,7 +55,8 @@ public class KitMenuListener {
                 break;
             }
             case 32: {
-                if (e.isShiftClick()) {
+                // Shift+click on clear button still clears inventory
+                if (e.isShiftClick() && !isKitOrEchestSlot(slot)) {
                     p.getInventory().clear();
                 }
                 break;
@@ -88,5 +70,9 @@ public class KitMenuListener {
             }
         }
         e.setCancelled(true);
+    }
+
+    private static boolean isKitOrEchestSlot(int slot) {
+        return (slot >= 9 && slot <= 26);
     }
 }
