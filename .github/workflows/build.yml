@@ -25,5 +25,5 @@ jobs:
       - name: Upload JAR
         uses: actions/upload-artifact@v4
         with:
-          name: KitEditorBedrock
-          path: target/KitEditorBedrock-1.0.jar
+          name: kitroom-bedrock
+          path: target/kitroom-bedrock.jar
