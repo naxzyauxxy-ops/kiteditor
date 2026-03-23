@@ -58,7 +58,7 @@ public class KitRoom
         this.inv.setItem(49, potion);
         final ItemStack equipment = KitRoom.createItem.CreateItem(Material.NETHERITE_CHESTPLATE, ChatColor.AQUA + "Equipment");
         final ItemMeta eqipmentmeta = equipment.getItemMeta();
-        eqipmentmeta.addEnchant(Enchantment.LUCK, 1, true);
+        eqipmentmeta.addEnchant(Enchantment.UNBREAKING, 1, true);
         eqipmentmeta.addItemFlags(new ItemFlag[] { ItemFlag.HIDE_ENCHANTS });
         equipment.setItemMeta(eqipmentmeta);
         this.inv.setItem(48, equipment);
